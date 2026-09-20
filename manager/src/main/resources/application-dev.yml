@@ -1,0 +1,16 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/dev_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PWD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+app:
+  security:
+      jwt-secret: ${JWT_SECRET:SAMpfVVAJkkyb4ci36ywGbG3vjx7lb49eEPCQkkodHw=}
+      cors-allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:3000,http://localhost:5173}
