@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.sessionService = sessionService;
     }
 
-    ///https://www.joptimize.io/blog/spring-boot-jwt-authentication-complete-guide-2026
+    //https://www.joptimize.io/blog/spring-boot-jwt-authentication-complete-guide-2026
 
     @Override
     protected void doFilterInternal(
