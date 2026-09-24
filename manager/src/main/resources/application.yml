@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: manager
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE:dev}
+  mvc:
+    problemdetails:
+      enabled: true
+
+app:
+  security:
+      jwt-access-expriation-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+      jwt-refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:9000000}
