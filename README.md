@@ -62,6 +62,10 @@ docker run -d \
   -e POSTGRES_PASSWORD=postgres \
   postgres:16-alpine
 ```
+or just do (if you already set up .env)
+```
+docker compose up
+```
 
 ### 2. Environment Configuration
 Copy the .example.env and rename it to .env or create a .env file in the root directory (or rely on the defaults mapped in application.yml):
