@@ -46,6 +46,10 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    private String avatarUrl;
+
+    @Column(length = 500)
+    private String bio;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,7 +74,5 @@ public class User implements UserDetails{
     }
 
     @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+    public boolean isEnabled() {return accountStatus == AccountStatus.ACTIVE;}
 }

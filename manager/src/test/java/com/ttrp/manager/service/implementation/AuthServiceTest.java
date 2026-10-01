@@ -64,14 +64,15 @@ class AuthServiceTest {
                 userIdentityMapper
         );
 
-        testUser = new User(
-                1L,
-                "testuser",
-                "test@test.com",
-                "encoded_password",
-                UserRole.USER,
-                AccountStatus.ACTIVE
-        );
+
+        testUser = User.builder()
+                .id(1L)
+                .username("testuser")
+                .email("test@test.com")
+                .password("encoded_password")
+                .userRole(UserRole.USER)
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
 
         testIdentity = new UserIdentity(
                 1L,
@@ -99,7 +100,8 @@ class AuthServiceTest {
             RegisterRequest registerRequest = new RegisterRequest(
                     "testuser",
                     "test@test.com",
-                    "plain-text-password"
+                    "plain-text-password",
+                    UserRole.PLAYER
             );
 
             RegisterResponse expectedResponse = new RegisterResponse(
