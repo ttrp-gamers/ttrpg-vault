@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public record UserIdentity(
+public record   UserIdentity(
         Long id,
         String email,
         AccountStatus status,
