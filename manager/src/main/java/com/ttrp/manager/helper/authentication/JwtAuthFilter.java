@@ -46,6 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring("Bearer ".length());
         Optional<TokenCredentials> tokenCredentials = jwtService.extractIfValidToken(token);
 
+
+
         if(tokenCredentials.isPresent()
                 && SecurityContextHolder.getContext().getAuthentication() == null
         ){
@@ -68,3 +70,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     }
 }
+
+
+
+

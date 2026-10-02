@@ -58,11 +58,14 @@ public class AuthService {
             return Optional.empty();
         }
 
+        UserRole requested = registerCredentials.role();
+        UserRole role = (requested == UserRole.USER) ? UserRole.USER : UserRole.PLAYER;
+
         User newUser = User.builder()
                 .username(registerCredentials.username())
                 .email(registerCredentials.email())
                 .password(passwordEncoder.encode(registerCredentials.password()))
-                .userRole(UserRole.USER)
+                .userRole(role)
                 .accountStatus(AccountStatus.ACTIVE)
                 .build();
 
@@ -70,7 +73,6 @@ public class AuthService {
 
         return Optional.of(new RegisterResponse(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail()));
     }
-
 
 
     public Optional<LoginResponse> loginUser(

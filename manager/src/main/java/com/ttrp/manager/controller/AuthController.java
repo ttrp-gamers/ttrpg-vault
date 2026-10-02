@@ -49,7 +49,7 @@ public class AuthController {
         Optional<RegisterResponse> registerResponse = authService.registerNewUser(registerCredentials);
         return registerResponse.isPresent() ?
                 ResponseEntity.ok().body(registerResponse)
-                : ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+                : ResponseEntity.status(HttpStatus.CONFLICT).body("Email or username already in use");
     }
 
 

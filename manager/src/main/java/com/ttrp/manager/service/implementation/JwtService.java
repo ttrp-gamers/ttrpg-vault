@@ -45,6 +45,7 @@ public class JwtService {
         } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }
+
     }
 
     public String generateToken(UserIdentity user, Long refreshTokenID){

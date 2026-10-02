@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.ttrp.manager.dto.user.ProfileResponse;
+import com.ttrp.manager.dto.user.UpdateProfileRequest;
+import com.ttrp.manager.service.implementation.UserService;
 
 import java.util.Optional;
 
@@ -20,21 +23,28 @@ import java.util.Optional;
 public class UserController {
 
     private final AuthService authService;
+    private final UserService userService;
 
-    public UserController(AuthService authService) {
+    public UserController(AuthService authService, UserService userService) {
         this.authService = authService;
+        this.userService = userService;
     }
 
 
     @GetMapping("/profile")
-    public ResponseEntity<?> requestOwnProfile(
+    public ResponseEntity<ProfileResponse> requestOwnProfile(
             @CurrentUser UserIdentity activeUser
     ){
-
-
-        return ResponseEntity.ok("Profile");
+        return ResponseEntity.ok(userService.getProfile(activeUser.id()));
     }
 
+    @PutMapping("/profile")
+    public ResponseEntity<ProfileResponse> requestProfileUpdate(
+            @CurrentUser UserIdentity activeUser,
+            @Valid @RequestBody UpdateProfileRequest request
+    ){
+        return ResponseEntity.ok(userService.updateProfile(activeUser.id(), request));
+    }
 
     @DeleteMapping("/delete-me")
     public ResponseEntity<?> requestAccountDeletion(
