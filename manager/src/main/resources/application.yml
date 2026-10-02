@@ -9,5 +9,5 @@ spring:
 
 app:
   security:
-      jwt-access-expriation-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+      jwt-access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
       jwt-refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:9000000}
