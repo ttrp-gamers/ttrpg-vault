@@ -63,6 +63,16 @@ public class GlobalExceptionHandler {
 
 
 
+    @ExceptionHandler(FriendRequestException.class)
+    public ProblemDetail handleFriendRequestException(FriendRequestException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                ex.getStatus(),
+                ex.getMessage()
+        );
+        problemDetail.setTitle("Friend Request Error");
+        return problemDetail;
+    }
+
 
 
 }
