@@ -80,7 +80,7 @@ public class SecurityConfig {
         CorsConfiguration conf = new CorsConfiguration();
 
         conf.setAllowedOrigins(securityProperties.corsAllowedOrigins());
-        conf.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        conf.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         conf.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         conf.setAllowCredentials(true);
 
