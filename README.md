@@ -7,7 +7,7 @@ Backend for a self-hosted TTRPG manager. Java, Spring-Boot
 
 * **Language:** Java 25
 * **Framework:** Spring Boot 3, Spring Security 6, Spring Data JPA
-* **Database:** PostgreSQL 16
+* **Database:** PostgreSQL 18
 * **JWT Engine:** `io.jsonwebtoken:jjwt` (v0.12.x)
 * **Build Tool:** Maven
 
@@ -60,7 +60,7 @@ docker run -d \
   -e POSTGRES_DB=dev_db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
-  postgres:16-alpine
+  postgres:18-alpine
 ```
 or just do (if you already set up .env)
 ```
