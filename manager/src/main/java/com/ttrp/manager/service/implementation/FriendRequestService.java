@@ -122,4 +122,16 @@ public class FriendRequestService {
                 .map(friendRequestMapper::toResponse)
                 .toList();
     }
+
+    @Transactional
+    public void removeFriend(Long senderId, Long receiverId) {
+        if (senderId.equals(receiverId)) {
+            throw new FriendRequestException(HttpStatus.BAD_REQUEST, "Cannot remove yourself as a friend");
+        }
+        Optional<Friendship> friendship = friendshipRepository.getFriendship(senderId, receiverId);
+        if (friendship.isEmpty()) {
+            throw new FriendRequestException(HttpStatus.NOT_FOUND, "Friendship not found");
+        }
+        friendshipRepository.delete(friendship.get());
+    }
 }
