@@ -10,6 +10,8 @@ import com.ttrp.manager.entity.type.FriendRequestStatus;
 import com.ttrp.manager.entity.type.UserRole;
 import com.ttrp.manager.exception.FriendRequestException;
 import com.ttrp.manager.mapper.FriendRequestMapper;
+import com.ttrp.manager.mapper.FriendRequestMapperImpl;
+import com.ttrp.manager.mapper.UserMapperImpl;
 import com.ttrp.manager.repository.FriendRequestRepository;
 import com.ttrp.manager.repository.FriendshipRepository;
 import com.ttrp.manager.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -39,7 +42,7 @@ class FriendRequestServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private final FriendRequestMapper friendRequestMapper = new FriendRequestMapper();
+    private final FriendRequestMapper friendRequestMapper = new FriendRequestMapperImpl();
 
     private FriendRequestService friendRequestService;
 
@@ -48,6 +51,8 @@ class FriendRequestServiceTest {
 
     @BeforeEach
     void setUp() {
+        ReflectionTestUtils.setField(friendRequestMapper, "userMapper", new UserMapperImpl());
+
         friendRequestService = new FriendRequestService(
                 friendRequestRepository,
                 friendshipRepository,
@@ -98,8 +103,8 @@ class FriendRequestServiceTest {
             assertThat(captor.getValue().getStatus()).isEqualTo(FriendRequestStatus.PENDING);
 
             assertThat(response.id()).isEqualTo(10L);
-            assertThat(response.senderId()).isEqualTo(1L);
-            assertThat(response.receiverId()).isEqualTo(2L);
+            assertThat(response.sender().id()).isEqualTo(1L);
+            assertThat(response.receiver().id()).isEqualTo(2L);
             assertThat(response.status()).isEqualTo(FriendRequestStatus.PENDING);
         }
 

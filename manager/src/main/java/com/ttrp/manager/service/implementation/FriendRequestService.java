@@ -13,6 +13,7 @@ import com.ttrp.manager.repository.FriendRequestRepository;
 import com.ttrp.manager.repository.FriendshipRepository;
 import com.ttrp.manager.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
     private final FriendRequestMapper friendRequestMapper;
-
-    public FriendRequestService(
-            FriendRequestRepository friendRequestRepository,
-            FriendshipRepository friendshipRepository,
-            UserRepository userRepository,
-            FriendRequestMapper friendRequestMapper) {
-        this.friendRequestRepository = friendRequestRepository;
-        this.friendshipRepository = friendshipRepository;
-        this.userRepository = userRepository;
-        this.friendRequestMapper = friendRequestMapper;
-    }
-
 
     @Transactional
     public FriendRequestResponse sendFriendRequest(Long senderId, Long receiverId) {
