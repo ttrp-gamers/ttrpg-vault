@@ -7,6 +7,7 @@ import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.helper.authentication.annotation.IsRegisteredUser;
 import com.ttrp.manager.service.implementation.FriendRequestService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/friend-requests")
 @IsRegisteredUser
+@AllArgsConstructor
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;
-
-    public FriendRequestController(FriendRequestService friendRequestService) {
-        this.friendRequestService = friendRequestService;
-    }
-
 
     @PostMapping
     public ResponseEntity<?> sendFriendRequest(

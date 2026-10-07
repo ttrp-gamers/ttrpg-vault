@@ -6,25 +6,14 @@ import com.ttrp.manager.dto.friendRequest.FriendshipResponse;
 import com.ttrp.manager.entity.FriendRequest;
 import com.ttrp.manager.entity.Friendship;
 import com.ttrp.manager.entity.User;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-public class FriendRequestMapper {
+@Mapper(componentModel = "spring", uses = UserMapper.class)
+public interface FriendRequestMapper {
 
-    public FriendRequestResponse toResponse(FriendRequest friendRequest) {
-        return new FriendRequestResponse(
-                friendRequest.getId(),
-                friendRequest.getSender().getId(),
-                friendRequest.getSender().getUsername(),
-                friendRequest.getReceiver().getId(),
-                friendRequest.getReceiver().getUsername(),
-                friendRequest.getStatus(),
-                friendRequest.getCreatedAt(),
-                friendRequest.getRespondedAt()
-        );
-    }
+    FriendRequestResponse toResponse(FriendRequest friendRequest);
 
-    public FriendshipResponse toFriendshipResponse(Friendship friendship, Long viewerUserId) {
+    default FriendshipResponse toFriendshipResponse(Friendship friendship, Long viewerUserId) {
         User friend = friendship.getUserA().getId().equals(viewerUserId)
                 ? friendship.getUserB()
                 : friendship.getUserA();
