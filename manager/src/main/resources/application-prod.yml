@@ -12,6 +12,10 @@ app:
   security:
       jwt-secret: ${JWT_SECRET}
       cors-allowed-origins: ${CORS_ALLOWED_ORIGIN}
+  admin:
+    admin-username: ${ADMIN_USERNAME}
+    admin-password: ${ADMIN_PASSWORD}
+    admin-email: ${ADMIN_EMAIL}
 
 
 
