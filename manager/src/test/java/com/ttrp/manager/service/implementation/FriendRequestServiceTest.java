@@ -1,5 +1,6 @@
 package com.ttrp.manager.service.implementation;
 
+import org.mapstruct.factory.Mappers;
 import com.ttrp.manager.dto.friendRequest.FriendRequestResponse;
 import com.ttrp.manager.dto.friendRequest.FriendshipResponse;
 import com.ttrp.manager.entity.FriendRequest;
@@ -10,7 +11,6 @@ import com.ttrp.manager.entity.type.FriendRequestStatus;
 import com.ttrp.manager.entity.type.UserRole;
 import com.ttrp.manager.exception.FriendRequestException;
 import com.ttrp.manager.mapper.FriendRequestMapper;
-import com.ttrp.manager.mapper.FriendRequestMapperImpl;
 import com.ttrp.manager.mapper.UserMapperImpl;
 import com.ttrp.manager.repository.FriendRequestRepository;
 import com.ttrp.manager.repository.FriendshipRepository;
@@ -42,7 +42,7 @@ class FriendRequestServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private final FriendRequestMapper friendRequestMapper = new FriendRequestMapperImpl();
+    private final FriendRequestMapper friendRequestMapper = Mappers.getMapper(FriendRequestMapper.class);
 
     private FriendRequestService friendRequestService;
 
