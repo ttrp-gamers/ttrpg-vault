@@ -2,12 +2,14 @@ package com.ttrp.manager.controller;
 
 
 import com.ttrp.manager.dto.admin.AdminUserPatchRequest;
+import com.ttrp.manager.dto.admin.AdminUserQuery;
 import com.ttrp.manager.dto.login.LoginResponse;
 import com.ttrp.manager.dto.user.UserDTO;
 import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.entity.type.UserRole;
 import com.ttrp.manager.helper.authentication.annotation.IsAdmin;
 import com.ttrp.manager.service.implementation.UserManagementService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,10 @@ public class AdminController {
     private final UserManagementService userManagementService;
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDTO>> getUserList(){
-        List<UserDTO> userList = userManagementService.getUserList();
+    public ResponseEntity<List<UserDTO>> getUserList(
+            @Valid @ModelAttribute AdminUserQuery auq
+    ){
+        List<UserDTO> userList = userManagementService.getUserList(auq);
         return ResponseEntity.ok().body(userList);
     }
 
