@@ -11,10 +11,14 @@ public record AdminUserQuery(
         QueryValue<String> email
 ) {
     public boolean isEmpty(){
-        return !(userRole.hasValue()
-                || accountStatus.hasValue()
-                || username.hasValue()
-                || email.hasValue());
+        return !(exists(userRole)
+                || exists(accountStatus)
+                || exists(username)
+                || exists(email));
+    }
+
+    public boolean  exists(QueryValue<?> qv){
+        return qv !=null && qv.hasValue();
     }
 
 }
