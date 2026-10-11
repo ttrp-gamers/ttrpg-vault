@@ -14,8 +14,8 @@ public record MapObjectResponse (
         @NotBlank
         Integer width,
         @NotBlank
-        Integer height){
-}
+        Integer height
+){}
 
 
 

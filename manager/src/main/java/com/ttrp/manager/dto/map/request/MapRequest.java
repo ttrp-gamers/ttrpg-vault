@@ -5,6 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record MapRequest (
         @NotBlank
-        String name,
-        String backgroundPath
+        String mapName,
+        String backgroundName
 ){}

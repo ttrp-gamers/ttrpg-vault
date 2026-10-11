@@ -11,21 +11,30 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class MapObject {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "map_id", nullable = false)
     private Map map;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
+
     @Column(name = "grid_x", nullable = false)
     private Integer gridX;
+
     @Column(name = "grid_y", nullable = false)
     private Integer gridY;
+
     @Column(name = "width_in_cells", nullable = false)
-    private Integer width;
+    @Builder.Default
+    private Integer width = 1;
+
     @Column(name = "height_in_cells", nullable = false)
-    private Integer height;
+    @Builder.Default
+    private Integer height = 1;
 }

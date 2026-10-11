@@ -19,8 +19,6 @@ public class UserManagementService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-
-
     @Transactional(readOnly = true)
     public List<UserDTO> getUserList() {
         return userRepository.findAll()
@@ -28,7 +26,6 @@ public class UserManagementService {
                 .map(userMapper::toResponse)
                 .toList();
     }
-
 
     @Transactional
     public void updateUser(Long userId, AdminUserPatchRequest patch){
@@ -39,8 +36,4 @@ public class UserManagementService {
         userMapper.patchUser(user, patch);
         userRepository.save(user);
     }
-
-
-
-
 }

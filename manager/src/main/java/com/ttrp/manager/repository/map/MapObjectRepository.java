@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface MapObjectRepository extends JpaRepository<MapObject, Long> {
 
-    List<MapObject> getFirstByMapId(Long mapId);
-
-    List<MapObject> findDistinctFirstByMapId(Long mapId);
-
-    ObservationFilter findFirstByMapId(Long mapId);
+    List<MapObject> findByMapNameAndMapOwnerId(String mapName, Long ownerId);
+    void deleteByMapId(Long mapId);
 }

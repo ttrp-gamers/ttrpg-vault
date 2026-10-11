@@ -1,21 +1,33 @@
 package com.ttrp.manager.entity.map;
 
+import com.ttrp.manager.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "asset")
+@Table(name = "assets")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Asset {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String owner = "public";
+
+    @Column(nullable = false)
+    private String name;
+
     @Column(name = "asset_path", nullable = false)
     private String assetPath;
-}
 
+    @Column(nullable = false)
+    private String category;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private String owner = "public";
+
+}

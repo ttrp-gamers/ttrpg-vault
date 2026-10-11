@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Map {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,4 +45,14 @@ public class Map {
     @OneToMany(mappedBy = "map", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MapObject> objects = new ArrayList<>();
+
+    public void addObject(MapObject object) {
+        objects.add(object);
+        object.setMap(this);
+    }
+
+    public void removeObject(MapObject object) {
+        objects.remove(object);
+        object.setMap(null);
+    }
 }
