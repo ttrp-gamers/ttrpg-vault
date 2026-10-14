@@ -24,7 +24,7 @@ public class MapController {
     public ResponseEntity<?> createMap(@RequestBody MapRequest mapRequest, @CurrentUser UserIdentity activeUser
     ){
         this.mapService.createMap(mapRequest, activeUser);
-        return ResponseEntity.ok("created map");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/backgrounds")
@@ -55,7 +55,7 @@ public class MapController {
                                                    @CurrentUser UserIdentity activeUser
     ){
         this.mapService.saveMapObjectsState(mapObjectRequest, activeUser);
-        return ResponseEntity.ok("saved map");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/asset")

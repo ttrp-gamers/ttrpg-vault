@@ -13,4 +13,8 @@ public interface MapRepository extends JpaRepository<Map, Long> {
 
     List<Map> getMapsByOwner(User owner);
 
-    Optional<Map> findByNameAndOwnerId(String name, Long ownerId);}
+    Optional<Map> findByNameAndOwnerId(String name, Long ownerId);
+
+}
+
+
