@@ -27,6 +27,6 @@ public class Asset {
 
     @Builder.Default
     @Column(nullable = false)
-    private String owner = "public";
-
+    private String owner = "public"; // or private
+    // another field with user id
 }
