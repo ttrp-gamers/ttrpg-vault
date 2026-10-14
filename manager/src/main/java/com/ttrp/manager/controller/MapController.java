@@ -20,20 +20,29 @@ public class MapController {
         this.mapService = mapService;
     }
 
-    @PostMapping("/map")
+    @PostMapping()
     public ResponseEntity<?> createMap(@RequestBody MapRequest mapRequest, @CurrentUser UserIdentity activeUser
     ){
         this.mapService.createMap(mapRequest, activeUser);
         return ResponseEntity.ok("created map");
     }
 
-    @GetMapping("/map")
+    @GetMapping("/backgrounds")
+    public ResponseEntity<?> getBackgrounds(){
+        return ResponseEntity.ok(this.mapService.getBackgrounds());
+    }
+    @GetMapping("/objects")
+    public ResponseEntity<?> getObjects(){
+        return ResponseEntity.ok(this.mapService.getObjects());
+    }
+
+    @GetMapping()
     public ResponseEntity<?> getMaps(@CurrentUser UserIdentity activeUser
     ){
         return ResponseEntity.ok(this.mapService.getMaps(activeUser));
     }
 
-    @GetMapping("/map/state/{mapName}")
+    @GetMapping("/state/{mapName}")
     public ResponseEntity<?> requestStateForMap(@CurrentUser UserIdentity activeUser, @PathVariable String mapName
     ){
         return mapService.retrieveMapState(mapName, activeUser)
@@ -41,7 +50,7 @@ public class MapController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/map/state")
+    @PostMapping("/state")
     public ResponseEntity<?> saveStateForMap( @RequestBody MapObjectRequest mapObjectRequest,
                                                    @CurrentUser UserIdentity activeUser
     ){
@@ -49,12 +58,12 @@ public class MapController {
         return ResponseEntity.ok("saved map");
     }
 
-    @GetMapping("/map/asset")
-    public  ResponseEntity<?> getAllAssets(@CurrentUser UserIdentity activeUser){
+    @GetMapping("/asset")
+        public  ResponseEntity<?> getAllAssets(@CurrentUser UserIdentity activeUser){
         return ResponseEntity.ok(this.mapService.retrieveAllAssets());
     }
 
-    @PostMapping("/map/import/bg")
+    @PostMapping("/import/bg")
     public ResponseEntity<?> importBackground(@CurrentUser UserIdentity activeUser, @RequestParam("file") MultipartFile file,
                                               @RequestParam(value = "name", required = false) String name
     ){
@@ -65,7 +74,7 @@ public class MapController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/map/import/obj")
+    @PostMapping("/import/obj")
     public ResponseEntity<?> importObject(@CurrentUser UserIdentity activeUser, @RequestParam("file") MultipartFile file,
                                           @RequestParam(value = "name", required = false) String name
     ){

@@ -3,8 +3,8 @@ package com.ttrp.manager.dto.map.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record MapRequest (
+public record   MapRequest (
         @NotBlank
         String mapName,
-        String backgroundName
+        Long backgroundId
 ){}

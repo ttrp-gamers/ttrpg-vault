@@ -1,6 +1,5 @@
 package com.ttrp.manager.entity.map;
 
-import com.ttrp.manager.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -3,6 +3,7 @@ package com.ttrp.manager.service.implementation;
 import com.ttrp.manager.dto.map.request.MapObjectItemDto;
 import com.ttrp.manager.dto.map.request.MapObjectRequest;
 import com.ttrp.manager.dto.map.request.MapRequest;
+import com.ttrp.manager.dto.map.response.AssetResponse;
 import com.ttrp.manager.dto.map.response.MapStateResponse;
 import com.ttrp.manager.dto.map.response.MapSummaryResponse;
 import com.ttrp.manager.entity.User;
@@ -10,6 +11,7 @@ import com.ttrp.manager.entity.map.Asset;
 import com.ttrp.manager.entity.map.Map;
 import com.ttrp.manager.entity.map.MapObject;
 import com.ttrp.manager.helper.authentication.UserIdentity;
+import com.ttrp.manager.mapper.EntityToDto.AssetsResponseMapper;
 import com.ttrp.manager.mapper.EntityToDto.MapObjectMapper;
 import com.ttrp.manager.repository.UserRepository;
 import com.ttrp.manager.repository.map.AssetRepository;
@@ -42,6 +44,7 @@ public class MapService implements IMapService {
     private final MapRepository mapRepository;
     private final AssetRepository assetRepository;
     private final MapObjectMapper mapObjectMapper;
+    private final AssetsResponseMapper assetsResponseMapper;
     @Value("${app.storage.location:./storage}")
     private String storageLocation;
 
@@ -51,12 +54,11 @@ public class MapService implements IMapService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("User not found - ID: " + activeUser.id())
                 );
-        String fileName = mapRequest.backgroundName().trim();
-        Path physicalPath = Paths.get(storageLocation, "maps", fileName);
-        if (!Files.exists(physicalPath) || Files.isDirectory(physicalPath)) {
-            throw new IllegalArgumentException("Background image '" + fileName + "' does not exist in storage/maps.");
-        }
-        String webBackgroundPath = "/files/maps/" + fileName;
+        Asset background = this.assetRepository.findById(mapRequest.backgroundId())
+                .orElseThrow(() ->
+                new EntityNotFoundException("Asset not found - ID: " + mapRequest.backgroundId())
+        );
+        String webBackgroundPath = background.getAssetPath();
         Map map = Map.builder()
                 .name(mapRequest.mapName())
                 .backgroundPath(webBackgroundPath)
@@ -131,13 +133,22 @@ public class MapService implements IMapService {
 
     @Override
     public void importMapObject(MultipartFile background, String displayName, UserIdentity activeUser) {
-        saveAssetFile(background, displayName,"assets" , "OBJECT", activeUser);
+        saveAssetFile(background, displayName,"objects" , "OBJECT", activeUser);
     }
 
+    @Override
+    public List<AssetResponse> getBackgrounds() {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("BACKGROUND"));
+    }
 
-    public void saveAssetFile(MultipartFile background, String displayName, String subDir, String category, UserIdentity activeUser) {
-        String contentType = background.getContentType();
-        String fileName = background.getName();
+    @Override
+    public List<AssetResponse> getObjects() {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("OBJECT"));
+    }
+
+    public void saveAssetFile(MultipartFile file, String displayName, String subDir, String category, UserIdentity activeUser) {
+        String contentType = file.getContentType();
+        String fileName = file.getName();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new IllegalArgumentException("Only image files (PNG, JPG, WebP) are allowed.");
         }
@@ -149,10 +160,10 @@ public class MapService implements IMapService {
 
             Path targetFilePath = targetLocation.resolve(fileName);
 
-            try (InputStream inputStream = background.getInputStream()) {
+            try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
             }
-            String webPath = "/files/" + subDir + fileName;
+            String webPath = "/files/" + subDir + "/" + fileName;
             Asset asset = Asset.builder()
                     .name(displayName)
                     .assetPath(webPath)
