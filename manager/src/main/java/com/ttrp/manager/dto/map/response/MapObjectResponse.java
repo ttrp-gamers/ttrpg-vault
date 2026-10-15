@@ -1,6 +1,5 @@
-package com.ttrp.manager.dto.map;
+package com.ttrp.manager.dto.map.response;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record MapObjectResponse (
@@ -15,8 +14,8 @@ public record MapObjectResponse (
         @NotBlank
         Integer width,
         @NotBlank
-        Integer height){
-}
+        Integer height
+){}
 
 
 
