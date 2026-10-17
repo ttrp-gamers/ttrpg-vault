@@ -11,6 +11,7 @@ import com.ttrp.manager.helper.authentication.annotation.IsAdmin;
 import com.ttrp.manager.service.implementation.UserManagementService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getUserList(
-            @Valid @ModelAttribute AdminUserQuery auq
+            @Valid @ParameterObject @ModelAttribute AdminUserQuery auq
     ){
         List<UserDTO> userList = userManagementService.getUserList(auq);
         return ResponseEntity.ok().body(userList);
