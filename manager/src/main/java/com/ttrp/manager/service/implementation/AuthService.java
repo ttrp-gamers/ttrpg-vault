@@ -9,11 +9,13 @@ import com.ttrp.manager.entity.RefreshToken;
 import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.entity.User;
 import com.ttrp.manager.entity.type.UserRole;
+import com.ttrp.manager.exception.UserCredentialsAlreadyInUseException;
 import com.ttrp.manager.helper.CurrentUser;
 import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.mapper.EntityToDto.LoginResponseMapper;
 import com.ttrp.manager.mapper.UserIdentityMapper;
 import com.ttrp.manager.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.security.authentication.*;
@@ -51,11 +53,20 @@ public class AuthService {
     }
 
 
+    @Transactional
     public Optional<RegisterResponse> registerNewUser(
             @Valid RegisterRequest registerCredentials
     ) {
-        if(userRepository.existsByEmail(registerCredentials.email())){
-            return Optional.empty();
+
+        boolean existsUsername = userRepository.existsByUsername(registerCredentials.username());
+        boolean existsEmail = userRepository.existsByEmail(registerCredentials.email());
+
+        if(existsUsername || existsEmail){
+            throw new UserCredentialsAlreadyInUseException(
+                "Username or Email already in use",
+                existsUsername,
+                existsEmail
+                );
         }
 
         UserRole requested = registerCredentials.role();
@@ -74,7 +85,7 @@ public class AuthService {
         return Optional.of(new RegisterResponse(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail()));
     }
 
-
+    @Transactional
     public Optional<LoginResponse> loginUser(
             @Valid LoginRequest loginCredentials
     ) {
@@ -91,6 +102,7 @@ public class AuthService {
     }
 
 
+    @Transactional
     public Optional<LoginResponse> refreshJwt(RefreshTokenRequest refreshToken){
             return sessionService.rotateRefreshToken(refreshToken.refreshToken())
                     .map(newToken -> {
