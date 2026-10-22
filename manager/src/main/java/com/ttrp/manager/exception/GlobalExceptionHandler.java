@@ -74,5 +74,27 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(LoginFailedException.class)
+    public ProblemDetail handleLoginFailedException(LoginFailedException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("Login Request Error");
+        return problemDetail;
+    }
+
+
+    @ExceptionHandler(UserCredentialsAlreadyInUseException.class)
+    public ProblemDetail handleUserCredentialsAlreadyInUseException(UserCredentialsAlreadyInUseException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getErrorMsg()
+        );
+        problemDetail.setTitle("Registration Request Error");
+        return problemDetail;
+    }
+
+
 
 }

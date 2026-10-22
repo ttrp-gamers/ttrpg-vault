@@ -6,6 +6,7 @@ import com.ttrp.manager.dto.register.RegisterRequest;
 
 import com.ttrp.manager.dto.register.RegisterResponse;
 import com.ttrp.manager.dto.tokenRefresh.RefreshTokenRequest;
+import com.ttrp.manager.dto.user.UserDTO;
 import com.ttrp.manager.helper.CurrentUser;
 import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.service.implementation.AuthService;
@@ -32,24 +33,20 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> requestLogin(
+    public ResponseEntity<LoginResponse> requestLogin(
             @Valid @RequestBody LoginRequest loginCredentials
     ){
-        Optional<LoginResponse> loginResponse = authService.loginUser(loginCredentials);
-        return loginResponse.isPresent() ?
-                ResponseEntity.ok().body(loginResponse)
-                : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login denied");
+        LoginResponse loginResponse = authService.loginUser(loginCredentials);
+        return ResponseEntity.ok().body(loginResponse);
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> requestRegistration(
+    public ResponseEntity<UserDTO> requestRegistration(
             @Valid @RequestBody RegisterRequest registerCredentials
     ){
-        Optional<RegisterResponse> registerResponse = authService.registerNewUser(registerCredentials);
-        return registerResponse.isPresent() ?
-                ResponseEntity.ok().body(registerResponse)
-                : ResponseEntity.status(HttpStatus.CONFLICT).body("Email or username already in use");
+        UserDTO registerResponse = authService.registerNewUser(registerCredentials);
+        return ResponseEntity.ok().body(registerResponse);
     }
 
 
