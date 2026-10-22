@@ -2,6 +2,7 @@ package com.ttrp.manager.service.implementation;
 
 import com.ttrp.manager.dto.register.RegisterRequest;
 import com.ttrp.manager.dto.register.RegisterResponse;
+import com.ttrp.manager.dto.user.UserDTO;
 import com.ttrp.manager.entity.RefreshToken;
 import com.ttrp.manager.entity.User;
 import com.ttrp.manager.entity.type.AccountStatus;
@@ -9,9 +10,11 @@ import com.ttrp.manager.entity.type.UserRole;
 import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.mapper.EntityToDto.LoginResponseMapper;
 import com.ttrp.manager.mapper.UserIdentityMapper;
+import com.ttrp.manager.mapper.UserMapper;
 import com.ttrp.manager.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +48,7 @@ class AuthServiceTest {
 
     private final UserIdentityMapper userIdentityMapper = new UserIdentityMapper();
     private final LoginResponseMapper loginResponseMapper = new LoginResponseMapper();
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     private AuthService authService;
 
@@ -61,7 +65,8 @@ class AuthServiceTest {
                 sessionService,
                 jwtService,
                 loginResponseMapper,
-                userIdentityMapper
+                userIdentityMapper,
+                userMapper
         );
 
 
@@ -104,10 +109,12 @@ class AuthServiceTest {
                     UserRole.PLAYER
             );
 
-            RegisterResponse expectedResponse = new RegisterResponse(
+            UserDTO expectedResponse = new UserDTO(
                     1L,
                     "testuser",
-                    "test@test.com"
+                    "test@test.com",
+                    UserRole.USER,
+                    AccountStatus.ACTIVE
             );
 
             when(userRepository.existsByEmail(registerRequest.email())).thenReturn(false);
@@ -124,14 +131,14 @@ class AuthServiceTest {
                         .build();
             });
 
-            Optional<RegisterResponse> response = authService.registerNewUser(registerRequest);
+            UserDTO response = authService.registerNewUser(registerRequest);
 
             ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
             verify(userRepository).save(userCaptor.capture());
             User capturedUser = userCaptor.getValue();
             assertThat(capturedUser.getPassword()).isEqualTo(testUser.getPassword());
 
-            assertThat(response).isPresent().contains(expectedResponse);
+            assertThat(response).isEqualTo(expectedResponse);
 
         }
 
