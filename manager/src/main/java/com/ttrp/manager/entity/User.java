@@ -2,6 +2,7 @@ package com.ttrp.manager.entity;
 
 
 import com.ttrp.manager.entity.type.AccountStatus;
+import com.ttrp.manager.entity.type.PlayerStatus;
 import com.ttrp.manager.entity.type.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -45,6 +46,10 @@ public class User implements UserDetails{
 
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private PlayerStatus playerStatus = PlayerStatus.OFFLINE;
 
     private String avatarUrl;
 
