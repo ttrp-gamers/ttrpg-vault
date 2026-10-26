@@ -22,4 +22,8 @@ public class FriendshipController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<?> listFriends(@CurrentUser UserIdentity activeUser) {
+        return ResponseEntity.ok(friendRequestService.listFriends(activeUser.id()));
+    }
 }

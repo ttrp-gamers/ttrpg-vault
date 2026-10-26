@@ -134,4 +134,11 @@ public class FriendRequestService {
         }
         friendshipRepository.delete(friendship.get());
     }
+
+    @Transactional
+    public List<FriendshipResponse> listFriends(Long userId) {
+        return friendshipRepository.getAllFriendshipsById(userId).stream()
+                .map(friendship -> friendRequestMapper.toFriendshipResponse(friendship, userId))
+                .toList();
+    }
 }
