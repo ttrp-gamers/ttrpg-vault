@@ -20,8 +20,6 @@ public interface IMapService {
     List<Asset> retrieveAllAssets();
     void importMapBackground(MultipartFile background, String displayName, UserIdentity activeUser);
     void importMapObject(MultipartFile background, String displayName, UserIdentity activeUser);
-    List<AssetResponse> getBackgrounds();
-    List<AssetResponse> getObjects();
-
-
+    List<AssetResponse> getBackgrounds(UserIdentity activeUser);
+    List<AssetResponse> getObjects(UserIdentity activeUser);
 }

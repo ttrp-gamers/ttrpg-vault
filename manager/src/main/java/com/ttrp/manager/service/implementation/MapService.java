@@ -137,13 +137,13 @@ public class MapService implements IMapService {
     }
 
     @Override
-    public List<AssetResponse> getBackgrounds() {
-        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("BACKGROUND"));
+    public List<AssetResponse> getBackgrounds(UserIdentity activeUser) {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory(activeUser.id(),"BACKGROUND"));
     }
 
     @Override
-    public List<AssetResponse> getObjects() {
-        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("OBJECT"));
+    public List<AssetResponse> getObjects(UserIdentity activeUser) {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory(activeUser.id(), "OBJECT"));
     }
 
     public void saveAssetFile(MultipartFile file, String displayName, String subDir, String category, UserIdentity activeUser) {

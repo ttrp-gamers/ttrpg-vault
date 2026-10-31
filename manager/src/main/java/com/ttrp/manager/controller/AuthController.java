@@ -52,7 +52,7 @@ public class AuthController {
                 : ResponseEntity.status(HttpStatus.CONFLICT).body("Email or username already in use");
     }
 
-
+        
     @PostMapping("/token-refresh")
     public ResponseEntity<?> requestTokenRefresh(
             @Valid @RequestBody RefreshTokenRequest refreshToken
