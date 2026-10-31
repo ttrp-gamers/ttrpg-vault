@@ -7,7 +7,6 @@ import com.ttrp.manager.entity.User;
 import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.entity.type.UserRole;
 import com.ttrp.manager.mapper.CharacterMapper;
-import com.ttrp.manager.service.declaration.IRulesetService;
 import com.ttrp.manager.repository.CharacterRepository;
 import com.ttrp.manager.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +38,6 @@ class CharacterServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private IRulesetService rulesetService;
-
     private final CharacterMapper characterMapper = Mappers.getMapper(CharacterMapper.class);
 
     private CharacterService characterService;
@@ -50,7 +46,7 @@ class CharacterServiceTest {
 
     @BeforeEach
     void setUp() {
-        characterService = new CharacterService(characterRepository, userRepository, characterMapper, rulesetService);
+        characterService = new CharacterService(characterRepository, userRepository, characterMapper);
 
         testUser = User.builder()
                 .id(1L)
@@ -232,3 +228,4 @@ class CharacterServiceTest {
         }
     }
 }
+

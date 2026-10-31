@@ -11,3 +11,5 @@ app:
   security:
     jwt-access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
     jwt-refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:9000000}
+  storage:
+    location: ${APP_STORAGE_LOCATION:./storage}
