@@ -22,6 +22,7 @@ public interface FriendRequestMapper {
                 friendship.getId(),
                 friend.getId(),
                 friend.getUsername(),
+                friend.getPlayerStatus(),
                 friendship.getCreatedAt()
         );
     }
