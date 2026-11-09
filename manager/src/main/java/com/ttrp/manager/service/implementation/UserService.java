@@ -4,6 +4,7 @@ import com.ttrp.manager.dto.user.ProfileResponse;
 import com.ttrp.manager.dto.user.UpdateProfileRequest;
 import com.ttrp.manager.dto.user.UserDeleteRequest;
 import com.ttrp.manager.entity.User;
+import com.ttrp.manager.entity.type.PlayerStatus;
 import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -65,7 +66,14 @@ public class UserService {
     }
 
     private ProfileResponse toResponse(User u) {
-        return new ProfileResponse(u.getId(), u.getUsername(), u.getEmail(), u.getAvatarUrl(), u.getBio());
+        return new ProfileResponse(u.getId(), u.getUsername(), u.getEmail(), u.getAvatarUrl(), u.getBio(), u.getPlayerStatus());
+    }
+
+    @Transactional
+    public ProfileResponse updatePlayerStatus(Long userId, PlayerStatus status) {
+        User user = findUser(userId);
+        user.setPlayerStatus(status);
+        return toResponse(user);
     }
 
     @Transactional

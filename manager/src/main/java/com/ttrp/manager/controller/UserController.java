@@ -1,6 +1,7 @@
 package com.ttrp.manager.controller;
 
 import com.ttrp.manager.dto.tokenRefresh.RefreshTokenRequest;
+import com.ttrp.manager.dto.user.UpdatePlayerStatusRequest;
 import com.ttrp.manager.dto.user.UserDeleteRequest;
 import com.ttrp.manager.helper.CurrentUser;
 import com.ttrp.manager.helper.authentication.UserIdentity;
@@ -34,7 +35,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<ProfileResponse> requestOwnProfile(
             @CurrentUser UserIdentity activeUser
-    ){
+    ) {
         return ResponseEntity.ok(userService.getProfile(activeUser.id()));
     }
 
@@ -42,7 +43,7 @@ public class UserController {
     public ResponseEntity<ProfileResponse> requestProfileUpdate(
             @CurrentUser UserIdentity activeUser,
             @Valid @RequestBody UpdateProfileRequest request
-    ){
+    ) {
         return ResponseEntity.ok(userService.updateProfile(activeUser.id(), request));
     }
 
@@ -53,6 +54,9 @@ public class UserController {
             @Valid @RequestBody RefreshTokenRequest logOutToken
     ){
         // Possible Delete-Workflow: (Thank you for the foundation -Jakub)
+            @Valid @RequestBody UserDeleteRequest deleteAuthorisation
+    ) {
+        // Possible Delete-Workflow:
         // This requires the user to enter a password to delete the account
         authService.logoutUser(activeUser, logOutToken.refreshToken());
 
@@ -63,13 +67,16 @@ public class UserController {
     public ResponseEntity<?> requestLogout(
             @CurrentUser UserIdentity activeUser,
             @Valid @RequestBody RefreshTokenRequest logOutToken
-    ){
+    ) {
         return authService.logoutUser(activeUser, logOutToken.refreshToken()) ?
                 ResponseEntity.ok().body("Successfully logged out")
                 : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Logged out");
     }
 
-
+    @PutMapping("/status")
+    public ResponseEntity<?> requestStatus(@CurrentUser UserIdentity activeUser, @Valid @RequestBody UpdatePlayerStatusRequest request) {
+        return ResponseEntity.ok(userService.updatePlayerStatus(activeUser.id(), request.playerStatus()));
+    }
 
 
 }

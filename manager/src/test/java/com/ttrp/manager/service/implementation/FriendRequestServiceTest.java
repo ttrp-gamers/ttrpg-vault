@@ -23,9 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -252,6 +254,87 @@ class FriendRequestServiceTest {
             Optional<FriendRequestResponse> response = friendRequestService.cancelFriendRequest(10L, 2L);
 
             assertThat(response).isEmpty();
+        }
+    }
+
+
+    @Nested
+    @DisplayName("List Friends Tests")
+    class ListFriendsTests {
+
+        @Test
+        void listFriendsReturnsEmptyListWhenUserHasNoFriends() {
+            when(friendshipRepository.getAllFriendshipsById(1L)).thenReturn(List.of());
+
+            List<FriendshipResponse> response = friendRequestService.listFriends(1L);
+
+            assertThat(response).isEmpty();
+        }
+
+        @Test
+        void listFriendsResolvesTheOtherUserWhenViewerIsUserA() {
+            Friendship friendship = Friendship.builder()
+                    .id(100L)
+                    .userA(sender)
+                    .userB(receiver)
+                    .createdAt(Instant.now())
+                    .build();
+            when(friendshipRepository.getAllFriendshipsById(1L)).thenReturn(List.of(friendship));
+
+            List<FriendshipResponse> response = friendRequestService.listFriends(1L);
+
+            assertThat(response).hasSize(1);
+            assertThat(response.get(0).friendUserId()).isEqualTo(receiver.getId());
+            assertThat(response.get(0).friendUsername()).isEqualTo(receiver.getUsername());
+        }
+
+        @Test
+        void listFriendsResolvesTheOtherUserWhenViewerIsUserB() {
+            Friendship friendship = Friendship.builder()
+                    .id(100L)
+                    .userA(sender)
+                    .userB(receiver)
+                    .createdAt(Instant.now())
+                    .build();
+            when(friendshipRepository.getAllFriendshipsById(2L)).thenReturn(List.of(friendship));
+
+            List<FriendshipResponse> response = friendRequestService.listFriends(2L);
+
+            assertThat(response).hasSize(1);
+            assertThat(response.get(0).friendUserId()).isEqualTo(sender.getId());
+            assertThat(response.get(0).friendUsername()).isEqualTo(sender.getUsername());
+        }
+
+        @Test
+        void listFriendsMapsEveryFriendshipWhenUserHasMultipleFriends() {
+            User thirdUser = User.builder()
+                    .id(3L)
+                    .username("thirdUser")
+                    .email("third@test.com")
+                    .password("encoded_password")
+                    .userRole(UserRole.USER)
+                    .accountStatus(AccountStatus.ACTIVE)
+                    .build();
+
+            Friendship viewerAsUserA = Friendship.builder()
+                    .id(100L)
+                    .userA(sender)
+                    .userB(receiver)
+                    .createdAt(Instant.now())
+                    .build();
+            Friendship viewerAsUserB = Friendship.builder()
+                    .id(101L)
+                    .userA(thirdUser)
+                    .userB(sender)
+                    .createdAt(Instant.now())
+                    .build();
+            when(friendshipRepository.getAllFriendshipsById(1L)).thenReturn(List.of(viewerAsUserA, viewerAsUserB));
+
+            List<FriendshipResponse> response = friendRequestService.listFriends(1L);
+
+            assertThat(response).hasSize(2);
+            assertThat(response.stream().map(FriendshipResponse::friendUserId).toList())
+                    .containsExactlyInAnyOrder(receiver.getId(), thirdUser.getId());
         }
     }
 }
