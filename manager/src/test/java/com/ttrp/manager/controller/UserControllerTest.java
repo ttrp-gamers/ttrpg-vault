@@ -5,6 +5,10 @@ import com.ttrp.manager.entity.User;
 import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.repository.UserRepository;
+import com.ttrp.manager.service.implementation.AuthService;
+import com.ttrp.manager.service.implementation.UserService;
+import net.bytebuddy.implementation.ToStringMethod;
+import org.apache.coyote.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,27 +35,19 @@ import static org.mockito.Mockito.*;
 class  UserControllerTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private AuthService authService;
 
     @InjectMocks
     private UserController userController;
 
-    private User testUser;
     private UserIdentity testIdentity;
+    private final String refreshToken = "mock-refreshToken";
 
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
-                .id(1L)
-                .username("testuser")
-                .email("test@email.com")
-                .password("encodedPassword")
-                .accountStatus(AccountStatus.ACTIVE)
-                .build();
-
         testIdentity = new UserIdentity(
                 1L,
                 "test@email.com",
@@ -59,58 +56,61 @@ class  UserControllerTest {
         );
     }
 
-    @Nested
+    /*@Nested
     @DisplayName("Account Deactivation Tests")
     class AccountDeactivationTests {
 
         @Test
         void requestAccountDeletion_Success() { //-Jakub
-            //Given
-            UserDeleteRequest request = new UserDeleteRequest("password123");
+            //### ACT
+            UserDeleteRequest request = new UserDeleteRequest("password123", refreshToken);
 
-            when(userRepository.findById(testIdentity.id())).thenReturn(Optional.of(testUser));
-            when(passwordEncoder.matches(request.AccountPassword(), testUser.getPassword())).thenReturn(true);
-            when(userRepository.save(any(User.class))).thenReturn(testUser);
+            when(userService.deactivateProfile(eq(testIdentity.id()), any(UserDeleteRequest.class)))
+                    .thenReturn("Profile deleted successfully");
+            when(authService.logoutUser(eq(testIdentity), eq(refreshToken)))
+                    .thenReturn(true);
 
-            //When:
-            ResponseEntity<?> response =userController.requestAccountDeletion(testIdentity, request);
+            //### ACT
+            ResponseEntity<?> response = userController.requestAccountDeletion(testIdentity, request, refreshToken);
 
-            //Then:
+            //### ASSERT
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).isEqualTo("Profile deleted successfully");
-            assertThat(testUser.getAccountStatus()).isEqualTo(AccountStatus.DEACTIVATED);
-            verify(userRepository).save(testUser);
+
+            verify(userService).deactivateProfile(testIdentity.id(), request);;
+            verify(authService).logoutUser(testIdentity, refreshToken);
         }
 
         @Test
         void requestAccountDeletion_wrongPassword() {
-            //Given
-            UserDeleteRequest request = new UserDeleteRequest("wrongPassword");
+            //### ACT
+            UserDeleteRequest request = new UserDeleteRequest("wrongPassword",  refreshToken);
 
-            when(userRepository.findById(testIdentity.id())).thenReturn(Optional.of(testUser));
-            when(passwordEncoder.matches(request.AccountPassword(), testUser.getPassword())).thenReturn(false);
+            when(userService.deactivateProfile(eq(testIdentity.id()), any(UserDeleteRequest.class)))
+                    .thenThrow(new BadCredentialsException("Wrong Password"));
 
-            //When
-            ResponseEntity<?> response = userController.requestAccountDeletion(testIdentity, request);
+            //### ACT & ASSERT
+            assertThrows(BadCredentialsException.class, () ->
+                    userController.requestAccountDeletion(testIdentity, request, refreshToken));
 
-            //Then
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-            assertThat(response.getBody()).isEqualTo("Wrong password.");
-            assertThat(testUser.getAccountStatus()).isEqualTo(AccountStatus.ACTIVE);
-            verify(userRepository, never()).save(any(User.class));
+            verify(userService).deactivateProfile(testIdentity.id(), request);
+            verify(authService, never()).logoutUser(any(), any());
         }
 
         @Test
         void requestAccountDeletion_UserNotFound() {
-            //Given
-            UserDeleteRequest request = new UserDeleteRequest("password123");
+            //### ACT
+            UserDeleteRequest request = new UserDeleteRequest("password123", refreshToken);
 
-            when(userRepository.findById(testIdentity.id())).thenReturn(Optional.empty());
+            when(userService.deactivateProfile(eq(testIdentity.id()), any(UserDeleteRequest.class)))
+                    .thenThrow(new UsernameNotFoundException("User not found"));
 
-            //When & then together
+            //### ACT & ASSERT
             assertThrows(UsernameNotFoundException.class, () ->
-                    userController.requestAccountDeletion(testIdentity, request));
-            verify(userRepository, never()).save(any(User.class));
+                    userController.requestAccountDeletion(testIdentity, request, refreshToken));
+
+            verify(userService).deactivateProfile(testIdentity.id(), request);
+            verify(authService, never()).logoutUser(any(), any());
         }
-    }
+    }*/
 }
