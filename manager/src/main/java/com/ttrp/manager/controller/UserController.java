@@ -53,11 +53,6 @@ public class UserController {
             @Valid @RequestBody UserDeleteRequest request,
             @Valid @RequestBody RefreshTokenRequest logOutToken
     ){
-        // Possible Delete-Workflow: (Thank you for the foundation -Jakub)
-            @Valid @RequestBody UserDeleteRequest deleteAuthorisation
-    ) {
-        // Possible Delete-Workflow:
-        // This requires the user to enter a password to delete the account
         authService.logoutUser(activeUser, logOutToken.refreshToken());
 
         return ResponseEntity.ok(userService.deactivateProfile(activeUser.id(), request));
