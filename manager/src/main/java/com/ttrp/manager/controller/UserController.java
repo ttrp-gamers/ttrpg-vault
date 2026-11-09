@@ -1,6 +1,5 @@
 package com.ttrp.manager.controller;
 
-
 import com.ttrp.manager.dto.tokenRefresh.RefreshTokenRequest;
 import com.ttrp.manager.dto.user.UpdatePlayerStatusRequest;
 import com.ttrp.manager.dto.user.UserDeleteRequest;
@@ -26,7 +25,8 @@ public class UserController {
     private final AuthService authService;
     private final UserService userService;
 
-    public UserController(AuthService authService, UserService userService) {
+    public UserController(AuthService authService,
+                          UserService userService) { //cleaned up the format -Jakub
         this.authService = authService;
         this.userService = userService;
     }
@@ -48,16 +48,15 @@ public class UserController {
     }
 
     @DeleteMapping("/delete-me")
-    public ResponseEntity<?> requestAccountDeletion(
+    public ResponseEntity<ProfileResponse> requestAccountDeletion(
             @CurrentUser UserIdentity activeUser,
-            @Valid @RequestBody UserDeleteRequest deleteAuthorisation
-    ) {
-        // Possible Delete-Workflow:
-        // This requires the user to enter a password to delete the account
+            @Valid @RequestBody UserDeleteRequest request,
+            @Valid @RequestBody RefreshTokenRequest logOutToken
+    ){
+        authService.logoutUser(activeUser, logOutToken.refreshToken());
 
-        return ResponseEntity.ok().body("Profile deleted");
+        return ResponseEntity.ok(userService.deactivateProfile(activeUser.id(), request));
     }
-
 
     @PostMapping("/logout")
     public ResponseEntity<?> requestLogout(

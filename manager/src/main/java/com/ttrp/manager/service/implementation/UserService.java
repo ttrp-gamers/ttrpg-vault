@@ -2,11 +2,16 @@ package com.ttrp.manager.service.implementation;
 
 import com.ttrp.manager.dto.user.ProfileResponse;
 import com.ttrp.manager.dto.user.UpdateProfileRequest;
+import com.ttrp.manager.dto.user.UserDeleteRequest;
 import com.ttrp.manager.entity.User;
 import com.ttrp.manager.entity.type.PlayerStatus;
+import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -69,5 +74,19 @@ public class UserService {
         User user = findUser(userId);
         user.setPlayerStatus(status);
         return toResponse(user);
+    }
+
+    @Transactional
+    public ProfileResponse deactivateProfile(Long userId, UserDeleteRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if(!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Wrong password.");
+        }
+
+        user.setAccountStatus(AccountStatus.DEACTIVATED);
+
+        return toResponse(userRepository.save(user));
     }
 }
