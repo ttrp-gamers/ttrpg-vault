@@ -29,11 +29,11 @@ public class Map {
 
     @Builder.Default
     @Column(nullable = false)
-    private Integer columns = 25;
+    private Integer columns = 32;
 
     @Builder.Default
     @Column(nullable = false)
-    private Integer rows = 25;
+    private Integer rows = 18;
 
     @Column(name = "background_path")
     private String backgroundPath;

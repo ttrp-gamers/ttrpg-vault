@@ -3,6 +3,8 @@ package com.ttrp.manager.repository.map;
 import com.ttrp.manager.entity.map.MapObject;
 import io.micrometer.observation.ObservationFilter;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +14,7 @@ import java.util.List;
 public interface MapObjectRepository extends JpaRepository<MapObject, Long> {
 
     List<MapObject> findByMapNameAndMapOwnerId(String mapName, Long ownerId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM MapObject mo WHERE mo.map.id = :mapId")
     void deleteByMapId(Long mapId);
 }

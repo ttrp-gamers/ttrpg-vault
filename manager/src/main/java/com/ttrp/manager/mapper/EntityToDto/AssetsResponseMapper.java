@@ -12,7 +12,7 @@ public class AssetsResponseMapper {
     public List<AssetResponse> toAssetsReponse(List<Asset> assets){
         List<AssetResponse> assetResponses = new ArrayList<>();
         for (Asset asset : assets){
-            AssetResponse assetResponse = new AssetResponse(asset.getId(), asset.getName());
+            AssetResponse assetResponse = new AssetResponse(asset.getId(), asset.getName(), asset.getAssetPath());
             assetResponses.add(assetResponse);
         }
         return assetResponses;
