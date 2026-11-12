@@ -5,6 +5,15 @@ public record QueryValue<T>(
         QueryOperators operators,
         Boolean ascending
 ) {
+    public QueryValue {
+        if(operators == null){
+            operators = QueryOperators.EQUALS;
+        }
+        if(ascending == null){
+            ascending = true;
+        }
+    }
+
     public static <T> QueryValue<T> of(T value){
         return new QueryValue<T>(value, QueryOperators.EQUALS, true);
     }
