@@ -2,6 +2,7 @@ package com.ttrp.manager.controller;
 
 import com.ttrp.manager.dto.map.request.MapObjectRequest;
 import com.ttrp.manager.dto.map.request.MapRequest;
+import com.ttrp.manager.entity.User;
 import com.ttrp.manager.helper.CurrentUser;
 import com.ttrp.manager.helper.authentication.UserIdentity;
 import com.ttrp.manager.helper.authentication.annotation.IsRegisteredUser;
@@ -28,12 +29,12 @@ public class MapController {
     }
 
     @GetMapping("/backgrounds")
-    public ResponseEntity<?> getBackgrounds(){
-        return ResponseEntity.ok(this.mapService.getBackgrounds());
+    public ResponseEntity<?> getBackgrounds(@CurrentUser UserIdentity activeUser){
+        return ResponseEntity.ok(this.mapService.getBackgrounds(activeUser));
     }
     @GetMapping("/objects")
-    public ResponseEntity<?> getObjects(){
-        return ResponseEntity.ok(this.mapService.getObjects());
+    public ResponseEntity<?> getObjects(@CurrentUser UserIdentity activeUser){
+        return ResponseEntity.ok(this.mapService.getObjects(activeUser));
     }
 
     @GetMapping()

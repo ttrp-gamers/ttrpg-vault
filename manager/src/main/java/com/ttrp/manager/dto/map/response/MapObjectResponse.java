@@ -1,10 +1,13 @@
 package com.ttrp.manager.dto.map.response;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record MapObjectResponse (
-        @NotBlank
+        @NotNull
         Long mapId,
+        @NotNull
+        Long assetId,
         @NotBlank
         String assetPath,
         @NotBlank

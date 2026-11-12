@@ -99,7 +99,6 @@ public class MapService implements IMapService {
         }
         mapObjectRepository.deleteByMapId(map.getId());
         List<MapObject> mapObjectsToSave = new ArrayList<>();
-        // Should be by name not asset id
         for(MapObjectItemDto item : mapObjectReq.mapObjects()){
             Asset asset = assetRepository.findById(item.assetId())
                     .orElseThrow(() -> new RuntimeException("Asset not found with id: " + item.assetId()));
@@ -137,18 +136,18 @@ public class MapService implements IMapService {
     }
 
     @Override
-    public List<AssetResponse> getBackgrounds() {
-        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("BACKGROUND"));
+    public List<AssetResponse> getBackgrounds(UserIdentity activeUser) {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory(activeUser.id(),"BACKGROUND"));
     }
 
     @Override
-    public List<AssetResponse> getObjects() {
-        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory("OBJECT"));
+    public List<AssetResponse> getObjects(UserIdentity activeUser) {
+        return this.assetsResponseMapper.toAssetsReponse(this.assetRepository.getAllByCategory(activeUser.id(), "OBJECT"));
     }
 
     public void saveAssetFile(MultipartFile file, String displayName, String subDir, String category, UserIdentity activeUser) {
         String contentType = file.getContentType();
-        String fileName = file.getName();
+        String fileName = file.getOriginalFilename();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new IllegalArgumentException("Only image files (PNG, JPG, WebP) are allowed.");
         }
@@ -164,10 +163,16 @@ public class MapService implements IMapService {
                 Files.copy(inputStream, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
             }
             String webPath = "/files/" + subDir + "/" + fileName;
+            User user = null;
+            if (activeUser != null && activeUser.id() != null) {
+                user = userRepository.findById(activeUser.id())
+                        .orElseThrow(() -> new EntityNotFoundException("User not found - ID: " + activeUser.id()));
+            }
             Asset asset = Asset.builder()
                     .name(displayName)
                     .assetPath(webPath)
                     .category(category)
+                    .owner(user)
                     .build();
             this.assetRepository.save(asset);
         } catch (IOException e) {

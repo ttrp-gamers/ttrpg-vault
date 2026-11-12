@@ -49,7 +49,7 @@ public class AuthController {
         return ResponseEntity.ok().body(registerResponse);
     }
 
-
+        
     @PostMapping("/token-refresh")
     public ResponseEntity<?> requestTokenRefresh(
             @Valid @RequestBody RefreshTokenRequest refreshToken

@@ -1,5 +1,6 @@
 package com.ttrp.manager.entity.map;
 
+import com.ttrp.manager.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +26,11 @@ public class Asset {
     @Column(nullable = false)
     private String category;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private String owner = "public"; // or private
-    // another field with user id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = true)
+    private User owner;
+
+    public boolean isPublic() {
+        return this.owner == null;
+    }
 }

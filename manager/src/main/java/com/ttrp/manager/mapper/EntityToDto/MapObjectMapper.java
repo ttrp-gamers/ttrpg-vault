@@ -15,7 +15,7 @@ public class MapObjectMapper {
     public MapStateResponse toMapStateResponse(Map map){
         List<MapObjectResponse> mapObjectResponseList = new ArrayList<>();
         for(MapObject mapObject : map.getObjects()){
-            mapObjectResponseList.add(new MapObjectResponse(map.getId(),mapObject.getAsset().getAssetPath(), mapObject.getGridX(), mapObject.getGridY(), mapObject.getWidth(), mapObject.getHeight()));
+            mapObjectResponseList.add(new MapObjectResponse(map.getId(),mapObject.getAsset().getId(),mapObject.getAsset().getAssetPath(), mapObject.getGridX(), mapObject.getGridY(), mapObject.getWidth(), mapObject.getHeight()));
         }
        return new MapStateResponse(map.getId(), map.getName(), map.getBackgroundPath(), map.getColumns(), map.getRows(), map.getGridSize(), mapObjectResponseList);
     }
