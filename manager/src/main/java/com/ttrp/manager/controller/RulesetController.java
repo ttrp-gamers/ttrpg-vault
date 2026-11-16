@@ -21,6 +21,11 @@ public class RulesetController {
         return ResponseEntity.ok(rulesetService.getRulesets());
     }
 
+    @GetMapping("/catalog")
+    public ResponseEntity<Map<String, List<Map<String, Object>>>> characterCatalog() {
+        return ResponseEntity.ok(rulesetService.getCharacterCatalog());
+    }
+
     @PostMapping("/calculate")
     public ResponseEntity<CharacterCalculationResponse> calculate(
             @RequestBody CharacterCalculationRequest request
