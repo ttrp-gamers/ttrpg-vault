@@ -66,7 +66,7 @@ public class UserService {
     }
 
     private ProfileResponse toResponse(User u) {
-        return new ProfileResponse(u.getId(), u.getUsername(), u.getEmail(), u.getAvatarUrl(), u.getBio(), u.getPlayerStatus());
+        return new ProfileResponse(u.getId(), u.getUsername(), u.getEmail(), u.getAvatarUrl(), u.getBio(), u.getPlayerStatus(), u.getAccountStatus());
     }
 
     @Transactional
@@ -76,17 +76,17 @@ public class UserService {
         return toResponse(user);
     }
 
-    @Transactional
-    public ProfileResponse deactivateProfile(Long userId, UserDeleteRequest request) {
+    @Transactional // Basically works the same as "updatePlayerStatus"
+    public ProfileResponse deactivateProfile(Long userId, String confirmPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if(!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+        if(!passwordEncoder.matches(confirmPassword, user.getPassword())) {
             throw new BadCredentialsException("Wrong password.");
         }
 
         user.setAccountStatus(AccountStatus.DEACTIVATED);
 
-        return toResponse(userRepository.save(user));
+        return toResponse(user); // JPA automatically saves edited items, so repo.save() is redundant
     }
 }

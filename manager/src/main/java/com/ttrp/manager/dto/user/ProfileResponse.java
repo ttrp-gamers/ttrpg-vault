@@ -1,5 +1,6 @@
 package com.ttrp.manager.dto.user;
 
+import com.ttrp.manager.entity.type.AccountStatus;
 import com.ttrp.manager.entity.type.PlayerStatus;
 
 public record ProfileResponse(
@@ -8,5 +9,6 @@ public record ProfileResponse(
         String email,
         String avatarUrl,
         String bio,
-        PlayerStatus playerStatus
+        PlayerStatus playerStatus,
+        AccountStatus accountStatus
 ) {}
