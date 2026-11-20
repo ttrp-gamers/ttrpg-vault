@@ -10,6 +10,10 @@ public record CharacterRequest(
         @NotBlank(message = "Character name is required")
         String name,
         String characterClass,
+        String species,
+        String background,
+        String alignment,
+        String notes,
         @NotNull(message = "Level is required")
         @Min(value = 1, message = "Level must be at least 1")
         Integer level,
@@ -22,6 +26,18 @@ public record CharacterRequest(
         Integer currentHp,
         Map<String, Object> attributes
 ) {
+    public CharacterRequest(
+            String name,
+            String characterClass,
+            Integer level,
+            String ruleset,
+            Integer maxHp,
+            Integer currentHp,
+            Map<String, Object> attributes
+    ) {
+        this(name, characterClass, null, null, null, null, level, ruleset, maxHp, currentHp, attributes);
+    }
+
     // Cross-field validation is needed because maxHp and currentHp are valid individually.
     @AssertTrue(message = "Current HP cannot exceed maximum HP")
     public boolean isCurrentHpWithinMaximum() {

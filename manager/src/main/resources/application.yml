@@ -11,6 +11,8 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 app:
+  open5e:
+    base-url: ${OPEN5E_API_URL:https://api.open5e.com}
   security:
     jwt-access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
     jwt-refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:9000000}

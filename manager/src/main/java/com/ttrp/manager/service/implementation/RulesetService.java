@@ -1,16 +1,12 @@
 package com.ttrp.manager.service.implementation;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ttrp.manager.dto.character.CharacterCalculationRequest;
 import com.ttrp.manager.dto.character.CharacterCalculationResponse;
 import com.ttrp.manager.service.declaration.IRulesetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -18,26 +14,32 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Service
 @RequiredArgsConstructor
 public class RulesetService implements IRulesetService {
-    private static final Map<String, String> RULESET_FILES = Map.of(
-            "DND_5E", "dnd5e.json",
-            "CALL_OF_CTHULHU_7E", "callOfCthulhu7e.json",
-            "PATHFINDER_2E", "pathfinder2e.json",
-            "CUSTOM", "custom.json"
-    );
-
-    private final ObjectMapper objectMapper;
-    private final ResourceLoader resourceLoader;
+    private final Open5eClient open5eClient;
 
     @Override
     public List<Map<String, Object>> getRulesets() {
-        return RULESET_FILES.keySet().stream().map(this::loadRuleset).toList();
+        return List.of(dnd5eRuleset("DND_5E_2014", "Dungeons & Dragons 5e (2014)"),
+                dnd5eRuleset("DND_5E_2024", "Dungeons & Dragons 5e (2024)"),
+                customRuleset());
+    }
+
+    @Override
+    public Map<String, List<Map<String, Object>>> getCharacterCatalog() {
+        return Map.of(
+                "classes2014", open5eClient.getClasses("5e-2014"),
+                "subclasses2014", open5eClient.getSubclasses("5e-2014"),
+                "classes2024", open5eClient.getClasses("5e-2024"),
+                "subclasses2024", open5eClient.getSubclasses("5e-2024"),
+                "species", open5eClient.getSpecies(),
+                "backgrounds", open5eClient.getBackgrounds()
+        );
     }
 
     @Override
     public CharacterCalculationResponse calculate(CharacterCalculationRequest request) {
         Map<String, Object> ruleset = request.rulesetSchema() != null
                 ? request.rulesetSchema()
-                : loadRuleset(Optional.ofNullable(request.rulesetKey()).orElse("CUSTOM"));
+                : ruleset(Optional.ofNullable(request.rulesetKey()).orElse("CUSTOM"));
         Map<String, Object> values = request.values() == null ? Map.of() : request.values();
         Map<String, Object> context = new HashMap<>(values);
         context.put("level", request.level() == null ? 1 : request.level());
@@ -50,7 +52,7 @@ public class RulesetService implements IRulesetService {
                 if (rawStat instanceof Map<?, ?> stat) {
                     String id = String.valueOf(stat.get("id"));
                     Object formula = stat.containsKey("formula") ? stat.get("formula") : "";
-                    derived.put(id, evaluate(String.valueOf(formula), ruleset, context));
+                    derived.put(id, evaluate(id, String.valueOf(formula), ruleset, context));
                 }
             }
         }
@@ -58,25 +60,67 @@ public class RulesetService implements IRulesetService {
         return new CharacterCalculationResponse(derived, hp);
     }
 
-    private Map<String, Object> loadRuleset(String key) {
-        String filename = RULESET_FILES.get(key);
-        if (filename == null) {
-            throw new ResponseStatusException(BAD_REQUEST, "Unknown ruleset: " + key);
+    private Map<String, Object> ruleset(String key) {
+        if ("DND_5E".equals(key) || "DND_5E_2014".equals(key)) {
+            return dnd5eRuleset("DND_5E_2014", "Dungeons & Dragons 5e (2014)");
         }
-        try {
-            return objectMapper.readValue(
-                    resourceLoader.getResource("classpath:character/rulesets/" + filename).getInputStream(),
-                    new TypeReference<>() {});
-        } catch (IOException exception) {
-            throw new IllegalStateException("Unable to load ruleset " + key, exception);
+        if ("DND_5E_2024".equals(key)) {
+            return dnd5eRuleset("DND_5E_2024", "Dungeons & Dragons 5e (2024)");
         }
+        if ("CUSTOM".equals(key)) {
+            return customRuleset();
+        }
+        throw new ResponseStatusException(BAD_REQUEST, "Unknown ruleset: " + key);
     }
 
-    private Object evaluate(String formula, Map<String, Object> ruleset, Map<String, Object> values) {
+    private Map<String, Object> customRuleset() {
+        return new LinkedHashMap<>(Map.of(
+                "id", "custom",
+                "name", "Homebrew (custom ruleset)",
+                "description", "Define the fields your game needs.",
+                "terminology", Map.of("archetype", "Archetype", "level", "Level"),
+                "archetypes", List.of(),
+                "sections", List.of(),
+                "derivedStats", List.of(),
+                "resources", List.of()
+        ));
+    }
+
+    private Map<String, Object> dnd5eRuleset(String id, String name) {
+        List<Map<String, Object>> fields = List.of(
+                field("strength", "Strength"),
+                field("dexterity", "Dexterity"),
+                field("constitution", "Constitution"),
+                field("intelligence", "Intelligence"),
+                field("wisdom", "Wisdom"),
+                field("charisma", "Charisma")
+        );
+        return new LinkedHashMap<>(Map.of(
+                "id", id,
+                "name", name,
+                "description", "Standard ability scores and level-based hit points.",
+                "terminology", Map.of("archetype", "Class", "level", "Level"),
+                "archetypes", List.of("Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk",
+                        "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"),
+                "sections", List.of(Map.of("id", "abilities", "title", "Ability Scores", "fields", fields)),
+                "derivedStats", List.of(Map.of("id", "hitPoints", "label", "Hit Points",
+                        "formula", "level * hitDie + floor((constitution - 10) / 2) * level")),
+                "resources", List.of()
+        ));
+    }
+
+    private Map<String, Object> field(String id, String label) {
+        return Map.of("id", id, "label", label, "model", "score", "defaultValue", 10,
+                "min", 1, "max", 30, "modifier", "floor((" + id + " - 10) / 2)");
+    }
+
+    private Object evaluate(String statId, String formula, Map<String, Object> ruleset, Map<String, Object> values) {
+        if (formula.isBlank()) return null;
         try {
             return new FormulaParser(formulaWithIds(formula, ruleset), values).parse();
         } catch (RuntimeException exception) {
-            return null;
+            throw new ResponseStatusException(BAD_REQUEST,
+                    "Invalid formula for derived stat '" + statId + "'", exception);
         }
     }
 
