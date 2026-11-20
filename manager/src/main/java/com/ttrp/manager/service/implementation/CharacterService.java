@@ -16,7 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -90,7 +92,13 @@ public class CharacterService implements ICharacterService {
     }
 
     private HashMap<String, Object> copyAttributes(java.util.Map<String, Object> attributes) {
-        // Keep request data separate from the entity's mutable attributes map.
-        return attributes == null ? new HashMap<>() : new HashMap<>(attributes);
+        Map<String, Object> source = attributes == null ? Map.of() : attributes;
+        HashMap<String, Object> normalized = new LinkedHashMap<>(source);
+        normalized.putIfAbsent("sheetVersion", 1);
+        normalized.putIfAbsent("values", new LinkedHashMap<>(source));
+        normalized.putIfAbsent("resources", new LinkedHashMap<>());
+        normalized.putIfAbsent("hitDie", 8);
+        normalized.putIfAbsent("autoCalculateHp", true);
+        return normalized;
     }
 }

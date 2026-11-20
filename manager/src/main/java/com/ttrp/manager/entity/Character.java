@@ -30,11 +30,24 @@ public class Character {
 
     private String characterClass;
 
+    private String species;
+
+    private String background;
+
+    private String alignment;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
     @Builder.Default
     private Integer level = 1;
 
     @Builder.Default
     private String ruleset = "D&D 5e";
+
+    @Column(name = "rules_version", nullable = false)
+    @Builder.Default
+    private String rulesVersion = "1";
 
     private Integer maxHp;
 
@@ -49,4 +62,3 @@ public class Character {
 
     private Instant updatedAt;
 }
-

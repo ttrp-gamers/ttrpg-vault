@@ -8,6 +8,10 @@ public record CharacterResponse(
         Long userId,
         String name,
         String characterClass,
+        String species,
+        String background,
+        String alignment,
+        String notes,
         Integer level,
         String ruleset,
         Integer maxHp,
@@ -16,4 +20,3 @@ public record CharacterResponse(
         Instant createdAt,
         Instant updatedAt
 ) {}
-
